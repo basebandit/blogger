@@ -98,7 +98,7 @@ func main() {
 			if err := srv.Shutdown(ctx); err != nil {
 				srv.Close()
 				fmt.Printf("could not shut down server gracefully: %v\n", err)
-				defer os.Exit(1)
+				os.Exit(1)
 			}
 
 			fmt.Println("Server shutting down gracefully")
@@ -107,7 +107,7 @@ func main() {
 		case err := <-errc:
 			if err != http.ErrServerClosed {
 				fmt.Printf("server error: %v\n", err)
-				defer os.Exit(1)
+				os.Exit(1)
 			}
 		}
 	}
