@@ -29,34 +29,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	info, err := os.Stat(*contentDir)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	//holds our html files and their paths
-	cmap := map[string]string{}
-
-	//check if the content passed in is a directory. if it is a directory we traverse its contents.pulling out only html files
-	if isDir := info.IsDir(); isDir {
-		files, err := ioutil.ReadDir(*contentDir)
-		if err != nil {
-			fmt.Printf("ioutil.ReadDir(%s): error %s", *contentDir, err)
-		}
-
-		for _, f := range files {
-			//We are only interested in html files for now
-			if strings.HasSuffix(f.Name(), ".html") {
-				// fmt.Println(f.Name())
-				fp := filepath.Join(*contentDir, f.Name())
-				key := strings.Split(f.Name(), ".")[0]
-				cmap[key] = fp
-			}
-		}
-
-		// fmt.Printf("%+v\n", cmap)
-	}
+	cmap := parseContentDir(contentDir)
 
 	mux := http.NewServeMux()
 
@@ -118,4 +91,35 @@ func serveFile(path string) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, path)
 	}
+}
+
+func parseContentDir(contentDir *string) map[string]string {
+	info, err := os.Stat(*contentDir)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	//holds our html files and their paths
+	cmap := map[string]string{}
+
+	//check if the content passed in is a directory. if it is a directory we traverse its contents.pulling out only html files
+	if isDir := info.IsDir(); isDir {
+		files, err := ioutil.ReadDir(*contentDir)
+		if err != nil {
+			fmt.Printf("ioutil.ReadDir(%s): error %s", *contentDir, err)
+			os.Exit(1)
+		}
+
+		for _, f := range files {
+			//We are only interested in html files for now
+			if strings.HasSuffix(f.Name(), ".html") {
+				fp := filepath.Join(*contentDir, f.Name())
+				key := strings.Split(f.Name(), ".")[0]
+				cmap[key] = fp
+			}
+		}
+
+	}
+	return cmap
 }
