@@ -79,7 +79,7 @@ func readPosts() ([]string, []string, error) {
 					mdContent = append(mdContent, line)
 				}
 			} else {
-				if len(scanner.Text()) != 0 {
+				if len(line) != 0 {
 					frontMatter = append(frontMatter, line)
 				}
 			}
